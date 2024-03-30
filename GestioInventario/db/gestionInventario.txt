@@ -1,0 +1,35 @@
+use gestioninventario;
+-- Tabla de Proveedores
+CREATE TABLE Proveedores (
+    ProveedorID INT AUTO_INCREMENT PRIMARY KEY,
+    Nombre VARCHAR(100) NOT NULL,
+    Apellido VARCHAR(100),
+    Direccion VARCHAR(100),
+    Telefono VARCHAR(20),
+    Email VARCHAR(100)
+);
+
+-- Tabla de RegistroMovimientos
+CREATE TABLE RegistroMovimientos (
+    MovimientoID INT AUTO_INCREMENT PRIMARY KEY,
+    NombreProducto VARCHAR(100),
+    DescripcionProducto TEXT,
+    CategoriaProducto VARCHAR(50),
+    PrecioProducto DECIMAL(10, 2),
+    StockMinimoProducto INT,
+    StockMaximoProducto INT,
+    FechaMovimiento DATE,
+    TipoMovimiento ENUM('Entrada', 'Salida', 'Ajuste'),
+    Cantidad INT,
+    ProveedorID INT,
+    Remitente VARCHAR(100),
+    FOREIGN KEY (ProveedorID) REFERENCES Proveedores(ProveedorID)
+);
+
+-- Tabla de Usuarios
+CREATE TABLE Usuarios (
+    UsuarioID INT AUTO_INCREMENT PRIMARY KEY,
+    NombreUsuario VARCHAR(50) NOT NULL,
+    Contraseña VARCHAR(100) NOT NULL,
+    Rol ENUM('Admin', 'Usuario') NOT NULL
+);
