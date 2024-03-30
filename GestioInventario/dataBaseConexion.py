@@ -7,7 +7,7 @@ def conectar():
         host="localhost",
         user="root",
         password="sistemas",
-        database="db_productos"
+        database="gestioninventario"
     )
 
 

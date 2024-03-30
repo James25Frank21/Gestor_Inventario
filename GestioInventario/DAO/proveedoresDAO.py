@@ -2,12 +2,12 @@ import mysql.connector
 from dataBaseConexion import conectar
 
 
-def guardar_proveedor(nombre, direccion, telefono, email):
+def guardar_proveedor(nombre,apellido, direccion, telefono, email):
     try:
         conexion = conectar()
         cursor = conexion.cursor()
-        sql = "INSERT INTO Proveedores (Nombre, Direccion, Telefono, Email) VALUES (%s, %s, %s, %s)"
-        valores = (nombre, direccion, telefono, email)
+        sql = "INSERT INTO Proveedores (Nombre,Apellido, Direccion, Telefono, Email) VALUES (%s,%s, %s, %s, %s)"
+        valores = (nombre,apellido, direccion, telefono, email)
         cursor.execute(sql, valores)
 
         conexion.commit()
@@ -54,12 +54,12 @@ def eliminar_proveedor(proveedor_id):
     except mysql.connector.Error as error:
         print("Error al conectar a la base de datos:", error)
 
-def actualizar_proveedor(proveedor_id, nombre, direccion, telefono, email):
+def actualizar_proveedor(proveedor_id, nombre,apellido, direccion, telefono, email):
     try:
         conexion = conectar()
         cursor = conexion.cursor()
 
-        sql = "UPDATE Proveedores SET Nombre = %s, Direccion = %s, Telefono = %s, Email = %s WHERE ProveedorID = %s"
+        sql = "UPDATE Proveedores SET Nombre = %s,Apellido = %s, Direccion = %s, Telefono = %s, Email = %s WHERE ProveedorID = %s"
         valores = (nombre, direccion, telefono, email, proveedor_id)
         cursor.execute(sql, valores)
 
