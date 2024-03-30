@@ -1,13 +1,19 @@
 import mysql.connector
 from dataBaseConexion import conectar
 
+import mysql.connector
+from dataBaseConexion import conectar
 
-def guardar_proveedor(nombre,apellido, direccion, telefono, email):
+
+def guardar_Movimiento(nombre,apellido, direccion, telefono, email):
     try:
         conexion = conectar()
         cursor = conexion.cursor()
-        sql = "INSERT INTO Proveedores (Nombre,Apellido, Direccion, Telefono, Email) VALUES (%s,%s, %s, %s, %s)"
+        sql = "INSERT INTO registromovimientos (NombreProducto,DescripcionProducto, CategoriaProducto, PrecioProducto, StockMinimoProducto,StockMaximoProducto,FechaMovimiento,TipoMovimiento,Cantidad, ProveedorID,Remitente) VALUES (%s,%s, %s, %s, %s)"
         valores = (nombre,apellido, direccion, telefono, email)
+
+
+        
         cursor.execute(sql, valores)
 
         conexion.commit()
@@ -20,7 +26,7 @@ def guardar_proveedor(nombre,apellido, direccion, telefono, email):
     except mysql.connector.Error as error:
         print("Error al conectar a la base de datos:", error)
 
-def obtener_proveedores():
+def obtener_movimientos():
     try:
         conexion = conectar()
         cursor = conexion.cursor()
@@ -36,7 +42,7 @@ def obtener_proveedores():
     except mysql.connector.Error as error:
         print("Error al conectar a la base de datos:", error)
 
-def eliminar_proveedor(proveedor_id):
+def eliminar_movomiento(proveedor_id):
     try:
         conexion = conectar()
         cursor = conexion.cursor()
@@ -54,7 +60,7 @@ def eliminar_proveedor(proveedor_id):
     except mysql.connector.Error as error:
         print("Error al conectar a la base de datos:", error)
 
-def actualizar_proveedor(proveedor_id, nombre,apellido, direccion, telefono, email):
+def actualizar_movimiento(proveedor_id, nombre,apellido, direccion, telefono, email):
     try:
         conexion = conectar()
         cursor = conexion.cursor()
