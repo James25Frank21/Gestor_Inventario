@@ -1,75 +1,72 @@
 import mysql.connector
 from dataBaseConexion import conectar
+from model.Proveedores import *
 
+class ProveedorDAO:
+    @staticmethod
+    def insertar_proveedor(proveedor):
+        try:
+            conexion = conectar()
+            cursor = conexion.cursor()
+            sql = "INSERT INTO Proveedores (Nombre, Apellido, Direccion, Telefono, Email) VALUES (%s, %s, %s, %s, %s)"
+            valores = (proveedor.nombre, proveedor.apellido, proveedor.direccion, proveedor.telefono, proveedor.email)
+            cursor.execute(sql, valores)
+            conexion.commit()
+            print("Proveedor insertado correctamente.")
+        except mysql.connector.Error as error:
+            print("Error al insertar el proveedor:", error)
+        finally:
+            if conexion.is_connected():
+                cursor.close()
+                conexion.close()
 
-def guardar_proveedor(nombre,apellido, direccion, telefono, email):
-    try:
-        conexion = conectar()
-        cursor = conexion.cursor()
-        sql = "INSERT INTO Proveedores (Nombre,Apellido, Direccion, Telefono, Email) VALUES (%s,%s, %s, %s, %s)"
-        valores = (nombre,apellido, direccion, telefono, email)
-        cursor.execute(sql, valores)
+    @staticmethod
+    def actualizar_proveedor(proveedor):
+        try:
+            conexion = conectar()
+            cursor = conexion.cursor()
+            sql = "UPDATE Proveedores SET Nombre = %s, Apellido = %s, Direccion = %s, Telefono = %s, Email = %s WHERE ProveedorID = %s"
+            valores = (proveedor.nombre, proveedor.apellido, proveedor.direccion, proveedor.telefono, proveedor.email, proveedor.proveedor_id)
+            cursor.execute(sql, valores)
+            conexion.commit()
+            print("Proveedor actualizado correctamente.")
+        except mysql.connector.Error as error:
+            print("Error al actualizar el proveedor:", error)
+        finally:
+            if conexion.is_connected():
+                cursor.close()
+                conexion.close()
 
-        conexion.commit()
+    @staticmethod
+    def eliminar_proveedor(id_proveedor):
+        try:
+            conexion = conectar()
+            cursor = conexion.cursor()
+            sql = "DELETE FROM Proveedores WHERE ProveedorID = %s"
+            cursor.execute(sql, (id_proveedor,))
+            conexion.commit()
+            print("Proveedor eliminado correctamente.")
+        except mysql.connector.Error as error:
+            print("Error al eliminar el proveedor:", error)
+        finally:
+            if conexion.is_connected():
+                cursor.close()
+                conexion.close()
 
-        cursor.close()
-        conexion.close()
-
-        print("Proveedor guardado correctamente.")
-
-    except mysql.connector.Error as error:
-        print("Error al conectar a la base de datos:", error)
-
-def obtener_proveedores():
-    try:
-        conexion = conectar()
-        cursor = conexion.cursor()
-
-        cursor.execute("SELECT * FROM Proveedores")
-        proveedores = cursor.fetchall()
-
-        cursor.close()
-        conexion.close()
-
-        return proveedores
-
-    except mysql.connector.Error as error:
-        print("Error al conectar a la base de datos:", error)
-
-def eliminar_proveedor(proveedor_id):
-    try:
-        conexion = conectar()
-        cursor = conexion.cursor()
-
-        sql = "DELETE FROM Proveedores WHERE ProveedorID = %s"
-        cursor.execute(sql, (proveedor_id,))
-
-        conexion.commit()
-
-        cursor.close()
-        conexion.close()
-
-        print("Proveedor eliminado correctamente.")
-
-    except mysql.connector.Error as error:
-        print("Error al conectar a la base de datos:", error)
-
-def actualizar_proveedor(proveedor_id, nombre,apellido, direccion, telefono, email):
-    try:
-        conexion = conectar()
-        cursor = conexion.cursor()
-
-        sql = "UPDATE Proveedores SET Nombre = %s,Apellido = %s, Direccion = %s, Telefono = %s, Email = %s WHERE ProveedorID = %s"
-        valores = (nombre,apellido, direccion, telefono, email, proveedor_id)
-        cursor.execute(sql, valores)
-
-        conexion.commit()
-
-        cursor.close()
-        conexion.close()
-
-        print("Proveedor actualizado correctamente.")
-
-    except mysql.connector.Error as error:
-        print("Error al conectar a la base de datos:", error)
-
+    @staticmethod
+    def obtener_proveedores():
+        try:
+            conexion = conectar()
+            cursor = conexion.cursor()
+            cursor.execute("SELECT * FROM Proveedores")
+            proveedores = []
+            for proveedor_data in cursor.fetchall():
+                proveedor = Proveedor(*proveedor_data)
+                proveedores.append(proveedor)
+            return proveedores
+        except mysql.connector.Error as error:
+            print("Error al obtener los proveedores:", error)
+        finally:
+            if conexion.is_connected():
+                cursor.close()
+                conexion.close()

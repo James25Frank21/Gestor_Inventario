@@ -1,29 +1,25 @@
 from PyQt6.QtWidgets import QApplication, QLabel, QLineEdit, QFormLayout, QWidget, QHBoxLayout, QPushButton, \
     QVBoxLayout, QTableWidget, QTableWidgetItem, QMessageBox
 from PyQt6.QtGui import QPixmap, QIcon
-from DAO.proveedoresDAO import guardar_proveedor, obtener_proveedores, actualizar_proveedor, eliminar_proveedor
-
+from DAO.proveedoresDAO import ProveedorDAO
+from model.Proveedores import *
 
 class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Gestión de Inventario")
-        # Agregar un icono a la ventana
         self.setWindowIcon(QIcon("img/pngegg (5).png"))
         self.layout = QVBoxLayout()
-        self.setGeometry(350, 100, 630, 550)#fijar tamaño de la ventana
-
+        self.setGeometry(350, 100, 630, 550)
 
         # Configurar el formulario
         self.form_layout = QFormLayout()
 
-
-
-        # Agregar el título "Registro de Proveedores"
+        # Título del formulario
         self.registro_label = QLabel("Registro de Proveedores")
         self.form_layout.addRow(self.registro_label)
 
-        # Agregar campos
+        # Campos del formulario
         self.nombre_input = QLineEdit()
         self.form_layout.addRow(QLabel("Nombre:"), self.nombre_input)
 
@@ -39,68 +35,58 @@ class MainWindow(QWidget):
         self.email_input = QLineEdit()
         self.form_layout.addRow(QLabel("Email:"), self.email_input)
 
-
-
         # Cambiar el tamaño de los campos
         for i in range(self.form_layout.rowCount()):
             self.form_layout.itemAt(i, QFormLayout.ItemRole.FieldRole).widget().setFixedWidth(200)
 
-        #insertar un salto de linea
+        # Salto de línea
         self.form_layout.addRow(QLabel(""))
-        # Crear el layout vertical para los botones
+        # Layout vertical para los botones
         layout_vbox_buttons = QHBoxLayout()
-        # Agregar el botones_layout
         self.form_layout.addRow(layout_vbox_buttons)
 
-        # Crear botones
+        # Botones
         self.add_button = QPushButton("Agregar")
         self.update_button = QPushButton("Actualizar")
         self.delete_button = QPushButton("Eliminar")
 
         self.add_button.clicked.connect(self.guardar_proveedor)
-
-
         self.update_button.clicked.connect(self.actualizar_proveedor)
-
-
         self.delete_button.clicked.connect(self.eliminar_proveedor)
 
-
-        # Agregar los botones al layout vertical
+        # Botones en el layout vertical
         layout_vbox_buttons.addWidget(self.add_button)
         layout_vbox_buttons.addWidget(self.update_button)
         layout_vbox_buttons.addWidget(self.delete_button)
 
-
-        #cambiar el tamaño de los botones
+        # Tamaño de los botones
         self.add_button.setFixedSize(80, 30)
         self.update_button.setFixedSize(80, 30)
         self.delete_button.setFixedSize(80, 30)
 
-        # Crear un layout horizontal para el formulario y los botones
+        # Layout horizontal para el formulario y los botones
         layout_hbox = QHBoxLayout()
         layout_hbox.addLayout(self.form_layout)
-        layout_hbox.addLayout(layout_vbox_buttons)
 
-        # Crear la imagen
+        # Imagen
         self.image_label = QLabel()
         pixmap = QPixmap("img/pngegg.png")
         self.image_label.setPixmap(pixmap)
         self.image_label.setScaledContents(True)
 
-        # Cambiar el tamaño de la imagen
+        # Tamaño de la imagen
         self.image_label.setFixedSize(300, 250)
 
-        # Crear el layout vertical principal
-        layout_vbox = QVBoxLayout()
-
-        # Agregar el layout horizontal y la imagen al layout vertical principal
-        layout_vbox.addLayout(layout_hbox)
+        # Agregar la imagen al layout horizontal
         layout_hbox.addWidget(self.image_label)
 
+        # Layout vertical principal
+        layout_vbox = QVBoxLayout()
 
+        # Agregar el layout horizontal al vertical principal
+        layout_vbox.addLayout(layout_hbox)
 
-        # Crear la tabla
+        # Tabla de proveedores
         self.table = QTableWidget()
         self.table.setColumnCount(6)
         self.table.setHorizontalHeaderLabels(["ProveedorID", "Nombre", "Apellido", "Dirección", "Teléfono", "Email"])
@@ -109,12 +95,9 @@ class MainWindow(QWidget):
 
         # Agregar la tabla al layout vertical
         layout_vbox.addWidget(self.table)
-
-        # Establecer el layout vertical principal como el layout principal
         self.setLayout(layout_vbox)
 
-
-    # Conectar los botones a sus respectivas funciones
+    # Funciones de los botones
     def guardar_proveedor(self):
         nombre = self.nombre_input.text()
         apellido = self.apellido_input.text()
@@ -122,7 +105,8 @@ class MainWindow(QWidget):
         telefono = self.telefono_input.text()
         email = self.email_input.text()
 
-        guardar_proveedor(nombre, apellido, direccion, telefono, email)
+        proveedor = Proveedor(None, nombre, apellido, direccion, telefono, email)
+        ProveedorDAO.insertar_proveedor(proveedor)
         self.cargar_proveedores()
         self.limpiar_campos()
 
@@ -145,8 +129,9 @@ class MainWindow(QWidget):
             QMessageBox.warning(self, "Advertencia", "Por favor, seleccione un proveedor de la tabla.")
             return
 
-        id_proveedor = self.table.item(fila_seleccionada, 0).text()
-        actualizar_proveedor(id_proveedor, nombre, apellido, direccion, telefono, email)
+        id_proveedor = int(self.table.item(fila_seleccionada, 0).text())
+        proveedor = Proveedor(id_proveedor, nombre, apellido, direccion, telefono, email)
+        ProveedorDAO.actualizar_proveedor(proveedor)
         self.cargar_proveedores()
         self.limpiar_campos()
 
@@ -156,18 +141,22 @@ class MainWindow(QWidget):
             QMessageBox.warning(self, "Advertencia", "Por favor, seleccione un proveedor de la tabla.")
             return
 
-        id_proveedor = self.table.item(fila_seleccionada, 0).text()
-        eliminar_proveedor(id_proveedor)
+        id_proveedor = int(self.table.item(fila_seleccionada, 0).text())
+        ProveedorDAO.eliminar_proveedor(id_proveedor)
         self.cargar_proveedores()
         self.limpiar_campos()
 
     def cargar_proveedores(self):
         self.table.setRowCount(0)
-        proveedores = obtener_proveedores()
+        proveedores = ProveedorDAO.obtener_proveedores()
         for row, proveedor in enumerate(proveedores):
             self.table.insertRow(row)
-            for column, data in enumerate(proveedor):
-                self.table.setItem(row, column, QTableWidgetItem(str(data)))
+            self.table.setItem(row, 0, QTableWidgetItem(str(proveedor.proveedor_id)))
+            self.table.setItem(row, 1, QTableWidgetItem(proveedor.nombre))
+            self.table.setItem(row, 2, QTableWidgetItem(proveedor.apellido))
+            self.table.setItem(row, 3, QTableWidgetItem(proveedor.direccion))
+            self.table.setItem(row, 4, QTableWidgetItem(proveedor.telefono))
+            self.table.setItem(row, 5, QTableWidgetItem(proveedor.email))
 
     def limpiar_campos(self):
         self.nombre_input.clear()

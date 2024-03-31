@@ -48,8 +48,6 @@ def actualizar_movimiento(movimiento_id, nombre_producto, descripcion_producto, 
     try:
         conexion = conectar()
         cursor = conexion.cursor()
-
-        # Verificar si el tipo de movimiento es "salida"
         if tipo_movimiento == "Salida":
             sql = "UPDATE RegistroMovimientos SET NombreProducto = %s, DescripcionProducto = %s, CategoriaProducto = %s, PrecioProducto = %s, StockMinimoProducto = %s, StockMaximoProducto = %s, TipoMovimiento = %s, Cantidad = %s, ProveedorID = NULL, Remitente = %s WHERE MovimientoID = %s"
             valores = (nombre_producto, descripcion_producto, categoria_producto, precio_producto, stock_minimo_producto, stock_maximo_producto, tipo_movimiento, cantidad, remitente, movimiento_id)
