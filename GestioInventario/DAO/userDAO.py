@@ -57,3 +57,18 @@ class UsuarioDAO:
             print("Usuario actualizado correctamente.")
         except mysql.connector.Error as error:
             print("Error al actualizar el usuario:", error)
+
+    @staticmethod
+    def login(nombre_usuario, contraseña):
+        try:
+            conexion = conectar()
+            with conexion.cursor() as cursor:
+                sql = "SELECT * FROM Usuarios WHERE NombreUsuario = %s AND Contraseña = %s"
+                cursor.execute(sql, (nombre_usuario, contraseña))
+                usuario_data = cursor.fetchone()
+                if usuario_data:
+                    return Usuario(*usuario_data)
+                return None
+        except mysql.connector.Error as error:
+            print("Error al iniciar sesión:", error)
+            return None

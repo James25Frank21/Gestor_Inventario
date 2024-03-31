@@ -118,6 +118,7 @@ class MainWindowP(QMainWindow):
         self.toolbar.addAction(self.action_inicio)
         self.toolbar.addAction(self.action_Exportar)
         self.toolbar.addAction(self.action_salir)
+
     def on_inicio(self):
         self.statusBar().showMessage("Usted se encuentra en la página de inicio...")
         self.close()

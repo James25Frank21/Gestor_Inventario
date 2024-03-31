@@ -4,6 +4,7 @@ from PyQt6.QtWidgets import QApplication, QLabel, QLineEdit, QFormLayout, QWidge
 from PyQt6.QtGui import QPixmap, QIcon, QAction
 from DAO.userDAO import UsuarioDAO
 from model.User import *
+from paginaPrincipal import *
 from registroMovimientoUI import MainWindowM
 
 

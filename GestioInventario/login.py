@@ -2,17 +2,19 @@ import sys
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import *
 from PyQt6.QtGui import *
-from main_window import *
+from DAO.userDAO import *
+from paginaPrincipal import *
 
 
-class Login(QWidget):
+class LoginR(QWidget):
+
     def __init__(self):
         super().__init__()
         self.inicializar_ui()
 
     def inicializar_ui(self):
         self.setGeometry(500, 200, 350, 450)
-        self.setWindowTitle("Login")
+        self.setWindowTitle("Gestión de inventarios")
         self.setWindowIcon(QIcon("img/pngegg (5).png"))
         self.set_background_image("img/pngegg (4).png")
         self.generar_formulario()
@@ -45,7 +47,7 @@ class Login(QWidget):
         self.user_input.move(90, 120)
 
         password_label = QLabel(self)
-        password_label.setText("Contraseña:")
+        password_label.setText("Password:")
         password_label.setFont(QFont('Medio', 12))
         password_label.setStyleSheet("color:red;")
         password_label.move(20, 160)
@@ -54,7 +56,7 @@ class Login(QWidget):
         self.password_input.resize(250, 24)
         self.password_input.move(90, 160)
         self.password_input.setEchoMode(QLineEdit.EchoMode.Password)
-        self.password_input.returnPressed.connect(self.iniciar_sesion)
+        self.password_input.returnPressed.connect(self.iniciar_mainview)  # Conecta al método iniciar_mainview
 
         self.check_view_password = QCheckBox(self)
         self.check_view_password.setText("Ver Contraseña")
@@ -65,7 +67,8 @@ class Login(QWidget):
         login_button.setText("Ingresar")
         login_button.resize(100, 24)
         login_button.move(120, 250)
-        login_button.clicked.connect(self.iniciar_sesion)
+        login_button.clicked.connect(self.iniciar_mainview)
+
 
     def mostrar_contrasena(self, clicked):
         if clicked:
@@ -73,21 +76,25 @@ class Login(QWidget):
         else:
             self.password_input.setEchoMode(QLineEdit.EchoMode.Password)
 
-    def iniciar_sesion(self):
+    def iniciar_mainview(self):
         nombre_usuario = self.user_input.text()
         contraseña = self.password_input.text()
 
-        # Aquí podrías realizar la autenticación con la base de datos o algún otro método
-        # Por ahora, simplemente creamos la ventana principal con el nombre de usuario
-        if nombre_usuario and contraseña:
-            self.ventana_principal = VentanaPrincipal(nombre_usuario)
-            self.ventana_principal.show()
+        usuario = UsuarioDAO.login(nombre_usuario, contraseña)
+        if usuario:
+            self.open_main_window(usuario.rol)  # Pasar el rol del usuario
             self.close()
         else:
-            QMessageBox.warning(self, "Error", "Ingrese usuario y contraseña.")
+            QMessageBox.warning(self, "Error", "Usuario o contraseña incorrectos.")
+            self.user_input.clear()
+            self.password_input.clear()
+
+    def open_main_window(self, rol):
+        self.main_window = MainWindowPri(rol)  # Pasar el rol al crear la instancia de MainWindowPri
+        self.main_window.show()
 
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    login = Login()
+    login = LoginR()
     sys.exit(app.exec())

@@ -7,6 +7,7 @@ from openpyxl import Workbook
 from DAO.proveedoresDAO import ProveedorDAO, obtener_proveedor
 from DAO.registroMovimientoDAO import obtener_fecha, RegistroMovimientoDAO, obtener_movimientos
 from model.registroMovimiento import RegistroMovimiento
+from paginaPrincipal import *
 
 
 class DialogoTabla(QDialog):
@@ -53,8 +54,8 @@ class MainWindowM(QMainWindow):
         self.form_layout.addRow(QLabel("DescripcionProducto:"), self.DescripcionProducto_input)
 
         self.CategoriaProducto_input = QComboBox()
-        categorias = ["Alimentos", "Bebidas", "Limpieza", "Higiene", "Electrodomesticos", "Ropa", "Calzado",
-                      "Accesorios", "Herramientas", "Juguetes", "Electronica", "Muebles", "Decoracion"]
+        #para una tienda electronica
+        categorias = ["Computadoras", "Celulares", "Tablets", "Accesorios", "Impresoras", "Monitores", "Teclados", "Mouses"]
         self.CategoriaProducto_input.addItems(categorias)
         self.form_layout.addRow(QLabel("CategoriaProducto:"), self.CategoriaProducto_input)
 
