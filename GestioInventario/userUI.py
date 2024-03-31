@@ -1,16 +1,17 @@
 from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QApplication, QLabel, QLineEdit, QFormLayout, QWidget, QHBoxLayout, QPushButton, \
-    QVBoxLayout, QTableWidget, QTableWidgetItem, QMessageBox, QComboBox
-from PyQt6.QtGui import QPixmap, QIcon
+    QVBoxLayout, QTableWidget, QTableWidgetItem, QMessageBox, QComboBox, QMainWindow, QToolBar
+from PyQt6.QtGui import QPixmap, QIcon, QAction
 from DAO.userDAO import UsuarioDAO
-from  model.User import *
+from model.User import *
+from registroMovimientoUI import MainWindowM
 
-class MainWindow(QWidget):
+
+class MainWindowU(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Gestión de Usuarios")
         self.setWindowIcon(QIcon("img/pngegg (5).png"))
-        self.layout = QVBoxLayout()
         self.setGeometry(350, 100, 360, 380)
 
         # Configurar el formulario
@@ -98,7 +99,38 @@ class MainWindow(QWidget):
 
         # Agregar la tabla al layout vertical
         layout_vbox.addWidget(self.table)
-        self.setLayout(layout_vbox)
+        widget = QWidget()
+        widget.setLayout(layout_vbox)
+        self.setCentralWidget(widget)
+
+        # Crear la barra de herramientas (ToolBar)
+        self.toolbar = QToolBar("ToolBar")
+        self.addToolBar(self.toolbar)
+
+        # Acciones de la barra de herramientas
+        self.action_inicio = QAction(QIcon("home.png"), "Inicio", self)
+        self.action_Exportar = QAction(QIcon("save.png"), "Exportar Excel", self)
+        self.action_salir = QAction(QIcon("exit.png"), "Salir", self)
+
+        self.action_inicio.triggered.connect(self.on_inicio)
+        self.action_Exportar.triggered.connect(self.abrir_interfaz_movimientoExcel)
+        self.action_salir.triggered.connect(self.salir)
+
+        # Agregar acciones a la barra de herramientas
+        self.toolbar.addAction(self.action_inicio)
+        self.toolbar.addAction(self.action_Exportar)
+        self.toolbar.addAction(self.action_salir)
+
+    def on_inicio(self):
+        self.statusBar().showMessage("Usted se encuentra en la página de inicio...")
+        self.close()
+
+    def salir(self):
+        QApplication.quit()
+
+    def abrir_interfaz_movimientoExcel(self):
+        self.interfaz_movimiento = MainWindowM()
+        self.interfaz_movimiento.exportar_movimiento()
 
     # Funciones de los botones
     def guardar_usuario(self):
@@ -161,6 +193,6 @@ class MainWindow(QWidget):
 
 if __name__ == "__main__":
     app = QApplication([])
-    window = MainWindow()
+    window = MainWindowU()
     window.show()
     app.exec()
