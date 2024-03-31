@@ -2,30 +2,26 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtWidgets import QApplication, QLabel, QLineEdit, QFormLayout, QWidget, QHBoxLayout, QPushButton, \
     QVBoxLayout, QTableWidget, QTableWidgetItem, QMessageBox, QComboBox
 from PyQt6.QtGui import QPixmap, QIcon
-from DAO.userDAO import *
-
+from DAO.userDAO import UsuarioDAO
+from  model.User import *
 
 class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Gestión de Inventario")
-
+        self.setWindowTitle("Gestión de Usuarios")
         self.setWindowIcon(QIcon("img/pngegg (5).png"))
         self.layout = QVBoxLayout()
         self.setGeometry(350, 100, 360, 380)
 
-
+        # Configurar el formulario
         self.form_layout = QFormLayout()
 
-
+        # Título del formulario
         self.registro_label = QLabel("Registro de Usuarios")
         self.form_layout.addRow(self.registro_label)
         self.registro_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-
-        self.form_layout.addRow(QLabel(""))
-
-        #Campos de texto
+        # Campos de texto
         self.nombreUsuario_input = QLineEdit()
         self.form_layout.addRow(QLabel("Nombre:"), self.nombreUsuario_input)
 
@@ -38,16 +34,18 @@ class MainWindow(QWidget):
         self.rol_input.addItems(rol)
         self.form_layout.addRow(QLabel("Rol:"), self.rol_input)
 
-        #para el tamaño de los campos de texto
+        # Para el tamaño de los campos de texto
         for i in range(self.form_layout.rowCount()):
             self.form_layout.itemAt(i, QFormLayout.ItemRole.FieldRole).widget().setFixedWidth(140)
 
-        #organizar los campos
+        # Organizar los campos
         self.form_layout.addRow(QLabel(""))
-        #layout vertical para los botones
+
+        # Layout vertical para los botones
         layout_vbox_buttons = QHBoxLayout()
         self.form_layout.addRow(layout_vbox_buttons)
-        # salto de línea
+
+        # Salto de línea
         self.form_layout.addRow(QLabel(""))
 
         # Crear botones
@@ -55,108 +53,110 @@ class MainWindow(QWidget):
         self.update_button = QPushButton("Actualizar")
         self.delete_button = QPushButton("Eliminar")
 
-        self.add_button.clicked.connect(self.guardar_user)
-        self.update_button.clicked.connect(self.actualizar_user)
-        self.delete_button.clicked.connect(self.eliminar_user)
+        self.add_button.clicked.connect(self.guardar_usuario)
+        self.update_button.clicked.connect(self.actualizar_usuario)
+        self.delete_button.clicked.connect(self.eliminar_usuario)
 
-        #botones vertical
+        # Botones vertical
         layout_vbox_buttons.addWidget(self.add_button)
         layout_vbox_buttons.addWidget(self.update_button)
         layout_vbox_buttons.addWidget(self.delete_button)
 
-        #tamaño de los botones
+        # Tamaño de los botones
         self.add_button.setFixedSize(70, 22)
         self.update_button.setFixedSize(70, 22)
         self.delete_button.setFixedSize(70, 22)
 
-        #ayout horizontal para el formulario y los botones
+        # Layout horizontal para el formulario y los botones
         layout_hbox = QHBoxLayout()
         layout_hbox.addLayout(self.form_layout)
-        layout_hbox.addLayout(layout_vbox_buttons)
 
-        #imagen
+        # Imagen
         self.image_label = QLabel()
         pixmap = QPixmap("img/pngegg (3).png")
         self.image_label.setPixmap(pixmap)
         self.image_label.setScaledContents(True)
 
-        #tamaño de la imagen
+        # Tamaño de la imagen
         self.image_label.setFixedSize(190, 140)
 
-        #layout vertical principal
-        layout_vbox = QVBoxLayout()
-
-        #layout horizontal y la imagen al layout vertical principal
-        layout_vbox.addLayout(layout_hbox)
+        # Agregar la imagen al layout horizontal
         layout_hbox.addWidget(self.image_label)
 
-        #tabla
+        # Layout vertical principal
+        layout_vbox = QVBoxLayout()
+
+        # Agregar el layout horizontal al vertical principal
+        layout_vbox.addLayout(layout_hbox)
+
+        # Tabla de usuarios
         self.table = QTableWidget()
         self.table.setColumnCount(4)
         self.table.setHorizontalHeaderLabels(["UsuarioID", "NombreUsuario", "Contraseña", "Rol"])
-        self.table.cellClicked.connect(self.seleccionar_user)
-        self.cargar_user()
+        self.table.cellClicked.connect(self.seleccionar_usuario)
+        self.cargar_usuarios()
 
-        #tabla al layout vertical
+        # Agregar la tabla al layout vertical
         layout_vbox.addWidget(self.table)
-
-        #layout vertical principal
         self.setLayout(layout_vbox)
 
-    #botones a sus respectivas funciones
-    def guardar_user(self):
-        NombreUsuario = self.nombreUsuario_input.text()
-        Contraseña = self.contrasena_input.text()
-        Rol = self.rol_input.currentText()
+    # Funciones de los botones
+    def guardar_usuario(self):
+        nombre_usuario = self.nombreUsuario_input.text()
+        contraseña = self.contrasena_input.text()
+        rol = self.rol_input.currentText()
 
-        guardar_usuario(NombreUsuario, Contraseña, Rol)
-        self.cargar_user()
+        usuario = Usuario(None, nombre_usuario, contraseña, rol)
+        UsuarioDAO.guardar_usuario(usuario)
+        self.cargar_usuarios()
         self.limpiar_campos()
 
-    def seleccionar_user(self, row, column):
+    def seleccionar_usuario(self, row, column):
         self.nombreUsuario_input.setText(self.table.item(row, 1).text())
         self.contrasena_input.setText(self.table.item(row, 2).text())
         self.rol_input.setCurrentText(self.table.item(row, 3).text())
 
-    def actualizar_user(self):
-        NombreUsuario = self.nombreUsuario_input.text()
-        Contraseña = self.contrasena_input.text()
-        Rol = self.rol_input.currentText()
+    def actualizar_usuario(self):
+        nombre_usuario = self.nombreUsuario_input.text()
+        contraseña = self.contrasena_input.text()
+        rol = self.rol_input.currentText()
 
         fila_seleccionada = self.table.currentRow()
         if fila_seleccionada == -1:
             QMessageBox.warning(self, "Advertencia", "Por favor, seleccione un Usuario de la tabla.")
             return
 
-        usuario_id = self.table.item(fila_seleccionada, 0).text()
-        actualizar_usuario(usuario_id, NombreUsuario, Contraseña, Rol)
-        self.cargar_user()
+        usuario_id = int(self.table.item(fila_seleccionada, 0).text())
+        usuario = Usuario(usuario_id, nombre_usuario, contraseña, rol)
+        UsuarioDAO.actualizar_usuario(usuario)
+        self.cargar_usuarios()
         self.limpiar_campos()
 
-    def eliminar_user(self):
+    def eliminar_usuario(self):
         fila_seleccionada = self.table.currentRow()
         if fila_seleccionada == -1:
             QMessageBox.warning(self, "Advertencia", "Por favor, seleccione un Usuario de la tabla.")
             return
 
-        usuario_id = self.table.item(fila_seleccionada, 0).text()
-        eliminar_usuario(usuario_id)
-        self.cargar_user()
+        usuario_id = int(self.table.item(fila_seleccionada, 0).text())
+        UsuarioDAO.eliminar_usuario(usuario_id)
+        self.cargar_usuarios()
         self.limpiar_campos()
 
-    def cargar_user(self):
+    def cargar_usuarios(self):
         self.table.setRowCount(0)
-        usuarios = obtener_usuarios()
+        usuarios = UsuarioDAO.obtener_usuarios()
         for row, usuario in enumerate(usuarios):
             self.table.insertRow(row)
-            for column, data in enumerate(usuario):
-                self.table.setItem(row, column, QTableWidgetItem(str(data)))
+            self.table.setItem(row, 0, QTableWidgetItem(str(usuario.usuario_id)))
+            self.table.setItem(row, 1, QTableWidgetItem(usuario.nombre_usuario))
+            self.table.setItem(row, 2, QTableWidgetItem(usuario.contraseña))
+            self.table.setItem(row, 3, QTableWidgetItem(usuario.rol))
 
     def limpiar_campos(self):
         self.nombreUsuario_input.clear()
         self.contrasena_input.clear()
         self.rol_input.setCurrentIndex(0)
-
 
 
 if __name__ == "__main__":

@@ -70,3 +70,13 @@ class ProveedorDAO:
             if conexion.is_connected():
                 cursor.close()
                 conexion.close()
+    #select * from proveedores
+def obtener_proveedor():
+    try:
+        conexion = conectar()
+        cursor = conexion.cursor()
+        cursor.execute("SELECT * FROM Proveedores")
+        proveedores = cursor.fetchall()
+        return proveedores
+    except mysql.connector.Error as error:
+        print("Error al obtener los proveedores:", error)

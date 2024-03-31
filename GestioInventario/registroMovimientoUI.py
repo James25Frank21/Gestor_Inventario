@@ -3,12 +3,12 @@ from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtWidgets import QApplication, QLabel, QLineEdit, QFormLayout, QWidget, QHBoxLayout, QPushButton, \
     QVBoxLayout, QTableWidget, QTableWidgetItem, QMessageBox, QComboBox, QFileDialog, QDialog
 from PyQt6.QtGui import QPixmap, QIcon
-from DAO.registroMovimientoDAO import obtener_movimientos, guardar_movimiento, actualizar_movimiento, \
-    eliminar_movimiento, obtener_fecha
-from DAO.proveedoresDAO import obtener_proveedores
 from openpyxl import Workbook
+from DAO.proveedoresDAO import ProveedorDAO, obtener_proveedor
+from DAO.registroMovimientoDAO import obtener_fecha, RegistroMovimientoDAO, obtener_movimientos
+from model.registroMovimiento import RegistroMovimiento
 
-#esto me permite mostrar una tabla de los proveedores
+
 class DialogoTabla(QDialog):
     celda_clickeada = pyqtSignal(int)
 
@@ -32,8 +32,6 @@ class DialogoTabla(QDialog):
         id_celda = int(self.table.item(row, 0).text())
         self.celda_clickeada.emit(id_celda)
         self.accept()
-
-
 
 class MainWindow(QWidget):
     def __init__(self):
@@ -76,7 +74,7 @@ class MainWindow(QWidget):
         self.boton_abrir_dialogo.clicked.connect(self.mostrar_dialogo)
 
         self.ProveedorID_input = QLineEdit(self)
-        self.ProveedorID_input.setReadOnly(True)#para que no se pueda editar
+        self.ProveedorID_input.setReadOnly(True)
 
         self.form_layout.addRow(self.boton_abrir_dialogo, self.ProveedorID_input)
 
@@ -143,25 +141,23 @@ class MainWindow(QWidget):
 
     def mostrar_dialogo(self):
         try:
-            #Datos de la tabla de proveedores
-            proveedores = obtener_proveedores()
-
+            proveedores = obtener_proveedor()
             dialogo = DialogoTabla(proveedores)
             dialogo.celda_clickeada.connect(self.actualizar_id)
             dialogo.exec()
         except Exception as e:
             print("Error al mostrar el diálogo:", e)
 
-    #|actualizar_id| es un metodo que me permite actualizar el id del proveedor
     def actualizar_id(self, id_celda):
         self.ProveedorID_input.setText(str(id_celda))
+
     def exportar_movimiento(self):
         file_path, _ = QFileDialog.getSaveFileName(self, "Exportar Movimientos", "", "Archivos XLSX (*.xlsx)")
         if file_path:
             try:
                 wb = Workbook()
                 ws_movimientos = wb.active
-                ws_movimientos.title = "Movimientos"#nombre de la hoja
+                ws_movimientos.title = "Movimientos"
                 ws_movimientos.append(["ID Movimiento", "Nombre Producto", "Descripción Producto", "Categoría",
                                        "Precio", "Stock Mínimo", "Stock Máximo", "Fecha Movimiento", "Tipo",
                                        "Cantidad", "ID Proveedor", "Remitente"])
@@ -173,7 +169,7 @@ class MainWindow(QWidget):
                 ws_proveedores = wb.create_sheet(title="Proveedores")
                 ws_proveedores.append(["ID Proveedor", "Nombre", "Apellido", "Dirección", "Teléfono", "Email"])
 
-                proveedores = obtener_proveedores()
+                proveedores = obtener_proveedor()
                 for proveedor in proveedores:
                     ws_proveedores.append(proveedor)
 
@@ -196,13 +192,16 @@ class MainWindow(QWidget):
             ProveedorID = self.ProveedorID_input.text() if self.ProveedorID_input.text() else None
             Remitente = self.Remitente_input.text() if self.TipoMovimiento_input.currentText() == "Salida" else None
 
-            guardar_movimiento(NombreProducto, DescripcionProducto, CategoriaProducto, PrecioProducto,
-                               StockMinimoProducto, StockMaximoProducto, FechaMovimiento, TipoMovimiento, Cantidad,
-                               ProveedorID, Remitente)
+            movimiento = RegistroMovimiento(None, NombreProducto, DescripcionProducto, CategoriaProducto,
+                                            PrecioProducto, StockMinimoProducto, StockMaximoProducto, FechaMovimiento,
+                                            TipoMovimiento, Cantidad, ProveedorID, Remitente)
+            RegistroMovimientoDAO.guardar_movimiento(movimiento)
             self.cargar_movimiento()
-            self.limpiar_campos()
+            self.limpiar_campos()  # Limpiar solo si la operación es exitosa
         except ValueError:
-            QMessageBox.warning(self, "Agregar Movimiento", "Por favor, ingrese un valor válido para el precio o la cantidad.")
+            QMessageBox.warning(self, "Agregar Movimiento", "Por favor, ingrese datos.")
+        except Exception as e:
+            QMessageBox.warning(self, "Agregar Movimiento", f"Error al guardar el movimiento: {str(e)}")
 
     def seleccionar_movimiento(self, row, column):
         try:
@@ -240,13 +239,14 @@ class MainWindow(QWidget):
                 return
 
             movimiento_id = self.table.item(fila_seleccionada, 0).text()
-            actualizar_movimiento(movimiento_id, NombreProducto, DescripcionProducto, CategoriaProducto,
+            movimiento = RegistroMovimiento(movimiento_id, NombreProducto, DescripcionProducto, CategoriaProducto,
                                   PrecioProducto, StockMinimoProducto, StockMaximoProducto, FechaMovimiento,
                                   TipoMovimiento, Cantidad, ProveedorID, Remitente)
+            RegistroMovimientoDAO.actualizar_movimiento(movimiento)
             self.cargar_movimiento()
             self.limpiar_campos()
         except ValueError:
-            QMessageBox.warning(self, "Actualizar Movimiento", "Por favor, ingrese un valor válido para el precio o la cantidad.")
+            QMessageBox.warning(self, "Actualizar Movimiento", "Por favor, ingrese datos.")
 
     def eliminar_movimiento(self):
         fila_seleccionada = self.table.currentRow()
@@ -254,18 +254,29 @@ class MainWindow(QWidget):
             QMessageBox.warning(self, "Advertencia", "Por favor, seleccione un Movimiento de la tabla.")
             return
 
-        movimiento_id = self.table.item(fila_seleccionada, 0).text()
-        eliminar_movimiento(movimiento_id)
+        movimiento_id = int(self.table.item(fila_seleccionada, 0).text())
+
+        RegistroMovimientoDAO.eliminar_movimiento(movimiento_id)
         self.cargar_movimiento()
         self.limpiar_campos()
 
     def cargar_movimiento(self):
         self.table.setRowCount(0)
-        movimientos = obtener_movimientos()
+        movimientos = RegistroMovimientoDAO.obtener_movimientos()
         for row, movimiento in enumerate(movimientos):
             self.table.insertRow(row)
-            for column, data in enumerate(movimiento):
-                self.table.setItem(row, column, QTableWidgetItem(str(data)))
+            self.table.setItem(row, 0, QTableWidgetItem(str(movimiento.movimiento_id)))
+            self.table.setItem(row, 1, QTableWidgetItem(movimiento.nombre_producto))
+            self.table.setItem(row, 2, QTableWidgetItem(movimiento.descripcion_producto))
+            self.table.setItem(row, 3, QTableWidgetItem(movimiento.categoria_producto))
+            self.table.setItem(row, 4, QTableWidgetItem(str(movimiento.precio_producto)))
+            self.table.setItem(row, 5, QTableWidgetItem(str(movimiento.stock_minimo_producto)))
+            self.table.setItem(row, 6, QTableWidgetItem(str(movimiento.stock_maximo_producto)))
+            self.table.setItem(row, 7, QTableWidgetItem(str(movimiento.fecha_movimiento)))
+            self.table.setItem(row, 8, QTableWidgetItem(movimiento.tipo_movimiento))
+            self.table.setItem(row, 9, QTableWidgetItem(str(movimiento.cantidad)))
+            self.table.setItem(row, 10, QTableWidgetItem(str(movimiento.proveedor_id)))
+            self.table.setItem(row, 11, QTableWidgetItem(str(movimiento.remitente)))
 
     def limpiar_campos(self):
         self.NombreProducto_input.clear()
