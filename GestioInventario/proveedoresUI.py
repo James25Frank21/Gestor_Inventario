@@ -105,8 +105,6 @@ class MainWindow(QWidget):
         self.table.setColumnCount(6)
         self.table.setHorizontalHeaderLabels(["ProveedorID", "Nombre", "Apellido", "Dirección", "Teléfono", "Email"])
         self.table.cellClicked.connect(self.seleccionar_proveedor)
-
-
         self.cargar_proveedores()
 
         # Agregar la tabla al layout vertical
