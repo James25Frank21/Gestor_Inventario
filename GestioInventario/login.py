@@ -82,14 +82,14 @@ class LoginR(QWidget):
 
         usuario = UsuarioDAO.login(nombre_usuario, contraseña)
         if usuario:
-            self.open_main_window(usuario.rol)  # Pasar el rol del usuario
+            self.paginaprincipal(usuario.rol)  # Pasar el rol del usuario
             self.close()
         else:
             QMessageBox.warning(self, "Error", "Usuario o contraseña incorrectos.")
             self.user_input.clear()
             self.password_input.clear()
 
-    def open_main_window(self, rol):
+    def paginaprincipal(self, rol):
         self.main_window = MainWindowPri(rol)  # Pasar el rol al crear la instancia de MainWindowPri
         self.main_window.show()
 
