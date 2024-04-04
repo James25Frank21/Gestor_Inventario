@@ -13,9 +13,10 @@ class MainWindowPri(QMainWindow):
         self.setWindowIcon(QIcon("img/pngegg (5).png"))
         self.setGeometry(350, 100, 630, 550)
 
-        #captura el rol del usuario
+        #esta parte captura el rol del usuario
         self.rol = rol
         print(self.rol)
+
         self.setWindowTitle("Barra de Navegación")
 
         # Creamos acciones para las opciones del menú
@@ -29,13 +30,13 @@ class MainWindowPri(QMainWindow):
 
     def createActions(self):
         # Creamos una acción para la opción "Inicio"
-        self.action_inicio = QAction("Inicio", self)
-        self.action_inicio.triggered.connect(self.on_inicio)
+        self.action_inicio = QAction(QIcon("img/iconos/hogar.png"),"Inicio", self)
+        self.action_inicio.triggered.connect(self.inicio)
 
-        self.action_usuario = QAction("Exportar Excel", self)
+        self.action_usuario = QAction(QIcon("img/iconos/archivo-hoja-de-calculo.png"),"Exportar Excel", self)
         self.action_usuario.triggered.connect(self.abrir_interfaz_movimientoExcel)
 
-        self.action_salir = QAction("Cerrar sesión", self)
+        self.action_salir = QAction(QIcon("img/iconos/salida-del-portal.png"),"Cerrar sesión", self)
         self.action_salir.triggered.connect(self.salir)
 
     def createToolBar(self):
@@ -52,7 +53,7 @@ class MainWindowPri(QMainWindow):
         # Layout vertical para los botones
         buttons_layout = QVBoxLayout()
 
-        # Crear botones
+        #botones
         self.añadirProveedor = QPushButton("Registrar Proveedor", self)
         self.añadirProveedor.clicked.connect(self.abrir_interfaz_proveedores)
         self.añaditMovimiento = QPushButton("Registrar Movimiento", self)
@@ -66,18 +67,18 @@ class MainWindowPri(QMainWindow):
         else:
             self.añadirUsuario.setVisible(True)
 
-        # Establecer estilos para los botones
+        # en esta parte se establece estilos para los botones
         self.añadirProveedor.setStyleSheet("background-color: #4CAF50; color: white;")
         self.añaditMovimiento.setStyleSheet("background-color: #008CBA; color: white;")
         self.añadirUsuario.setStyleSheet("background-color: #f44336; color: white;")
 
-        # Establecer tamaño fijo para los botones
+        # se establece el tamaño de los botones
         button_size = (200, 40)
         self.añadirProveedor.setFixedSize(*button_size)
         self.añaditMovimiento.setFixedSize(*button_size)
         self.añadirUsuario.setFixedSize(*button_size)
 
-        # Agregar botones al layout vertical
+        # Para agregar los botones al layout vertical
         buttons_layout.addWidget(self.añadirProveedor)
         buttons_layout.addWidget(self.añaditMovimiento)
         buttons_layout.addWidget(self.añadirUsuario)
@@ -89,24 +90,24 @@ class MainWindowPri(QMainWindow):
         image_label.setScaledContents(True)
         image_label.setFixedSize(400, 380)
 
-        # Agregar el layout de botones al layout principal
+        #layout de botones al layout principal
         main_layout.addLayout(buttons_layout)
 
-        # Agregar espacio entre los botones y la imagen
+        #espacio entre los botones y la imagen
         main_layout.addSpacing(20)
 
-        # Agregar la imagen al layout principal
+        #imagen al layout principal
         main_layout.addWidget(image_label)
 
-        # Establecer el layout principal de la ventana
+        #layout principal de la ventana
         central_widget = QWidget()
         central_widget.setLayout(main_layout)
         self.setCentralWidget(central_widget)
 
 
 
-    def on_inicio(self):
-        self.statusBar().showMessage("Usted se encuentra en la página de inicio...")
+    def inicio(self):
+        self.statusBar().showMessage("Calichin usted se encuentra en la página de inicio...")
 
 
 
@@ -134,15 +135,8 @@ class MainWindowPri(QMainWindow):
         self.interfaz_user = MainWindowU()
         self.interfaz_user.show()
 
-
-
-def main():
-
+if __name__ == "__main__":
     app = QApplication([])
     window = MainWindowPri("")
     window.show()
     sys.exit(app.exec())
-
-
-if __name__ == "__main__":
-    main()

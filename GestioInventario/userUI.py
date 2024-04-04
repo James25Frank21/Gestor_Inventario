@@ -15,15 +15,15 @@ class MainWindowU(QMainWindow):
         self.setWindowIcon(QIcon("img/pngegg (5).png"))
         self.setGeometry(350, 100, 360, 380)
 
-        # Configurar el formulario
-        self.form_layout = QFormLayout()
+
+        self.form_layout = QFormLayout() #esta es la variable que se encarga de crear el formulario
 
         # Título del formulario
         self.registro_label = QLabel("Registro de Usuarios")
         self.form_layout.addRow(self.registro_label)
         self.registro_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        # Campos de texto
+        # Campos del formulario
         self.nombreUsuario_input = QLineEdit()
         self.form_layout.addRow(QLabel("Nombre:"), self.nombreUsuario_input)
 
@@ -40,34 +40,34 @@ class MainWindowU(QMainWindow):
         for i in range(self.form_layout.rowCount()):
             self.form_layout.itemAt(i, QFormLayout.ItemRole.FieldRole).widget().setFixedWidth(140)
 
-        # Organizar los campos
-        self.form_layout.addRow(QLabel(""))
 
-        # Layout vertical para los botones
-        layout_vbox_buttons = QHBoxLayout()
+        self.form_layout.addRow(QLabel("")) # Salto de línea
+
+
+        layout_vbox_buttons = QHBoxLayout()#layout horizontal para los botones
         self.form_layout.addRow(layout_vbox_buttons)
 
         # Salto de línea
         self.form_layout.addRow(QLabel(""))
 
-        # Crear botones
-        self.add_button = QPushButton("Agregar")
-        self.update_button = QPushButton("Actualizar")
-        self.delete_button = QPushButton("Eliminar")
+        #botones
+        self.agregarBtn = QPushButton("Agregar")
+        self.actualizarBtn = QPushButton("Actualizar")
+        self.eliminarBtn = QPushButton("Eliminar")
 
-        self.add_button.clicked.connect(self.guardar_usuario)
-        self.update_button.clicked.connect(self.actualizar_usuario)
-        self.delete_button.clicked.connect(self.eliminar_usuario)
+        self.agregarBtn.clicked.connect(self.guardar_usuario)
+        self.actualizarBtn.clicked.connect(self.actualizar_usuario)
+        self.eliminarBtn.clicked.connect(self.eliminar_usuario)
 
         # Botones vertical
-        layout_vbox_buttons.addWidget(self.add_button)
-        layout_vbox_buttons.addWidget(self.update_button)
-        layout_vbox_buttons.addWidget(self.delete_button)
+        layout_vbox_buttons.addWidget(self.agregarBtn)
+        layout_vbox_buttons.addWidget(self.actualizarBtn)
+        layout_vbox_buttons.addWidget(self.eliminarBtn)
 
         # Tamaño de los botones
-        self.add_button.setFixedSize(70, 22)
-        self.update_button.setFixedSize(70, 22)
-        self.delete_button.setFixedSize(70, 22)
+        self.agregarBtn.setFixedSize(70, 22)
+        self.actualizarBtn.setFixedSize(70, 22)
+        self.eliminarBtn.setFixedSize(70, 22)
 
         # Layout horizontal para el formulario y los botones
         layout_hbox = QHBoxLayout()
@@ -109,20 +109,20 @@ class MainWindowU(QMainWindow):
         self.addToolBar(self.toolbar)
 
         # Acciones de la barra de herramientas
-        self.action_inicio = QAction(QIcon("home.png"), "Inicio", self)
-        self.action_Exportar = QAction(QIcon("save.png"), "Exportar Excel", self)
-        self.action_salir = QAction(QIcon("exit.png"), "Salir", self)
+        self.action_inicio = QAction(QIcon("img/iconos/hogar.png"), "Inicio", self)
+        self.action_Exportar = QAction(QIcon("img/iconos/archivo-hoja-de-calculo.png"), "Exportar Excel", self)
+        self.action_salir = QAction(QIcon("img/iconos/salida-del-portal.png"), "Salir", self)
 
-        self.action_inicio.triggered.connect(self.on_inicio)
+        self.action_inicio.triggered.connect(self.inicio)
         self.action_Exportar.triggered.connect(self.abrir_interfaz_movimientoExcel)
         self.action_salir.triggered.connect(self.salir)
 
-        # Agregar acciones a la barra de herramientas
+        # Acciones para la barra de herramientas
         self.toolbar.addAction(self.action_inicio)
         self.toolbar.addAction(self.action_Exportar)
         self.toolbar.addAction(self.action_salir)
 
-    def on_inicio(self):
+    def inicio(self):
         self.statusBar().showMessage("Usted se encuentra en la página de inicio...")
         self.close()
 
@@ -155,8 +155,8 @@ class MainWindowU(QMainWindow):
         rol = self.rol_input.currentText()
 
         fila_seleccionada = self.table.currentRow()
-        if fila_seleccionada == -1:
-            QMessageBox.warning(self, "Advertencia", "Por favor, seleccione un Usuario de la tabla.")
+        if fila_seleccionada == -1: #esto es para que no se pueda actualizar si no se ha seleccionado un usuario
+            QMessageBox.warning(self, "Wiu wiu wiu Ojito", "seleccione un Usuario de la tabla.")
             return
 
         usuario_id = int(self.table.item(fila_seleccionada, 0).text())
@@ -166,9 +166,9 @@ class MainWindowU(QMainWindow):
         self.limpiar_campos()
 
     def eliminar_usuario(self):
-        fila_seleccionada = self.table.currentRow()
+        fila_seleccionada = self.table.currentRow() #esta parte podemos seleccionar la fila que queremos eliminar
         if fila_seleccionada == -1:
-            QMessageBox.warning(self, "Advertencia", "Por favor, seleccione un Usuario de la tabla.")
+            QMessageBox.warning(self, "Wiu wiu wiu Ojito", "seleccione un Usuario de la tabla.")
             return
 
         usuario_id = int(self.table.item(fila_seleccionada, 0).text())

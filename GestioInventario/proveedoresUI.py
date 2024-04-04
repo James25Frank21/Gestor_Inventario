@@ -14,10 +14,10 @@ class MainWindowP(QMainWindow):
         self.setWindowIcon(QIcon("img/pngegg (5).png"))
         self.setGeometry(350, 100, 630, 550)
 
-        # Configurar el formulario
-        self.form_layout = QFormLayout()
 
-        # Título del formulario
+        self.form_layout = QFormLayout() #esto sirve para que los campos del formulario queden en forma de tabla
+
+        # Esta parte es para el formulario
         self.registro_label = QLabel("Registro de Proveedores")
         self.form_layout.addRow(self.registro_label)
 
@@ -37,17 +37,17 @@ class MainWindowP(QMainWindow):
         self.email_input = QLineEdit()
         self.form_layout.addRow(QLabel("Email:"), self.email_input)
 
-        # Cambiar el tamaño de los campos
+        # esto es para que los campos del formulario tengan un tamaño fijo
         for i in range(self.form_layout.rowCount()):
             self.form_layout.itemAt(i, QFormLayout.ItemRole.FieldRole).widget().setFixedWidth(200)
 
-        # Salto de línea
-        self.form_layout.addRow(QLabel(""))
-        # Layout vertical para los botones
-        layout_vbox_buttons = QHBoxLayout()
+
+        self.form_layout.addRow(QLabel("")) #esto es para que haya un espacio entre los campos del formulario y los botones
+
+        layout_vbox_buttons = QHBoxLayout() #esto me permite poner los botones en una fila horizontal
         self.form_layout.addRow(layout_vbox_buttons)
 
-        # Botones
+        #En esta parte se crean los botones
         self.add_button = QPushButton("Agregar")
         self.update_button = QPushButton("Actualizar")
         self.delete_button = QPushButton("Eliminar")
@@ -56,70 +56,68 @@ class MainWindowP(QMainWindow):
         self.update_button.clicked.connect(self.actualizar_proveedor)
         self.delete_button.clicked.connect(self.eliminar_proveedor)
 
-        # Botones en el layout vertical
-        layout_vbox_buttons.addWidget(self.add_button)
+        #Aqui se agregan los botones
+        layout_vbox_buttons.addWidget(self.add_button)#vbox es para que los botones queden uno debajo del otro
         layout_vbox_buttons.addWidget(self.update_button)
         layout_vbox_buttons.addWidget(self.delete_button)
 
-        # Tamaño de los botones
+        #en esta parte se le da un tamaño fijo a los botones
         self.add_button.setFixedSize(80, 30)
         self.update_button.setFixedSize(80, 30)
         self.delete_button.setFixedSize(80, 30)
 
-        # Layout horizontal para el formulario y los botones
-        layout_hbox = QHBoxLayout()
+
+        layout_hbox = QHBoxLayout() # esto es para que la imagen y el formulario queden en una fila horizontal
         layout_hbox.addLayout(self.form_layout)
 
-        # Imagen
+        #Imagen
         self.image_label = QLabel()
         pixmap = QPixmap("img/pngegg.png")
         self.image_label.setPixmap(pixmap)
         self.image_label.setScaledContents(True)
 
-        # Tamaño de la imagen
+        #en esta parte se le da un tamaño fijo a la imagen
         self.image_label.setFixedSize(300, 250)
 
-        # Agregar la imagen al layout horizontal
-        layout_hbox.addWidget(self.image_label)
 
-        # Layout vertical principal
-        layout_vbox = QVBoxLayout()
+        layout_hbox.addWidget(self.image_label) #esto es para que la imagen y el formulario queden en una fila horizontal
 
-        # Agregar el layout horizontal al vertical principal
+
+        layout_vbox = QVBoxLayout() # esto es para que la tabla y el formulario queden en una fila vertical
         layout_vbox.addLayout(layout_hbox)
 
         # Tabla de proveedores
         self.table = QTableWidget()
-        self.table.setColumnCount(6)
+        self.table.setColumnCount(6)#esto es para que la tabla tenga 6 columnas
         self.table.setHorizontalHeaderLabels(["ProveedorID", "Nombre", "Apellido", "Dirección", "Teléfono", "Email"])
         self.table.cellClicked.connect(self.seleccionar_proveedor)
         self.cargar_proveedores()
 
-        # Agregar la tabla al layout vertical
+        # esto es para que la tabla y el formulario queden en una fila vertical
         layout_vbox.addWidget(self.table)
         widget = QWidget()
         widget.setLayout(layout_vbox)
         self.setCentralWidget(widget)
 
-        # Crear la barra de herramientas (ToolBar)
+        #barra de herramientas (ToolBar)
         self.toolbar = QToolBar("ToolBar")
         self.addToolBar(self.toolbar)
 
         # Acciones de la barra de herramientas
-        self.action_inicio = QAction(QIcon("home.png"), "Inicio", self)
-        self.action_Exportar = QAction(QIcon("save.png"), "Exportar Excel", self)
-        self.action_salir = QAction(QIcon("exit.png"), "Salir", self)
+        self.action_inicio = QAction(QIcon("img/iconos/hogar.png"), "Inicio", self)
+        self.action_Exportar = QAction(QIcon("img/iconos/archivo-hoja-de-calculo.png"), "Exportar Excel", self)
+        self.action_salir = QAction(QIcon("img/iconos/salida-del-portal.png"), "Salir", self)
 
-        self.action_inicio.triggered.connect(self.on_inicio)
+        self.action_inicio.triggered.connect(self.inicio)
         self.action_Exportar.triggered.connect(self.abrir_interfaz_movimientoExcel)
         self.action_salir.triggered.connect(self.salir)
 
-        # Agregar acciones a la barra de herramientas
+        #esta parte es para darle a los iconos una accion
         self.toolbar.addAction(self.action_inicio)
         self.toolbar.addAction(self.action_Exportar)
         self.toolbar.addAction(self.action_salir)
 
-    def on_inicio(self):
+    def inicio(self):
         self.statusBar().showMessage("Usted se encuentra en la página de inicio...")
         self.close()
 
@@ -159,7 +157,7 @@ class MainWindowP(QMainWindow):
 
         fila_seleccionada = self.table.currentRow()
         if fila_seleccionada == -1:
-            QMessageBox.warning(self, "Advertencia", "Por favor, seleccione un proveedor de la tabla.")
+            QMessageBox.warning(self, "WIU wiu wiu Ojito", "seleccione un proveedor de la tabla.")
             return
 
         id_proveedor = int(self.table.item(fila_seleccionada, 0).text())
@@ -171,7 +169,7 @@ class MainWindowP(QMainWindow):
     def eliminar_proveedor(self):
         fila_seleccionada = self.table.currentRow()
         if fila_seleccionada == -1:
-            QMessageBox.warning(self, "Advertencia", "Por favor, seleccione un proveedor de la tabla.")
+            QMessageBox.warning(self, "WIU wiu wiu Ojito", "seleccione un proveedor de la tabla.")
             return
 
         id_proveedor = int(self.table.item(fila_seleccionada, 0).text())

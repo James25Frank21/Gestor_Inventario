@@ -1,6 +1,6 @@
 #mysql
 import mysql.connector
-from mysql.connector import Error
+
 
 def conectar():
     return mysql.connector.connect(

@@ -16,11 +16,11 @@ class LoginR(QWidget):
         self.setGeometry(500, 200, 350, 450)
         self.setWindowTitle("Gestión de inventarios")
         self.setWindowIcon(QIcon("img/pngegg (5).png"))
-        self.set_background_image("img/pngegg (4).png")
+        self.FondoImagen("img/pngegg (4).png")
         self.generar_formulario()
         self.show()
 
-    def set_background_image(self, image_path):
+    def FondoImagen(self, image_path):
         palette = self.palette()
         background_image = QPixmap(image_path)
         palette.setBrush(QPalette.ColorRole.Window,
@@ -74,7 +74,7 @@ class LoginR(QWidget):
         if clicked:
             self.password_input.setEchoMode(QLineEdit.EchoMode.Normal)
         else:
-            self.password_input.setEchoMode(QLineEdit.EchoMode.Password)
+            self.password_input.setEchoMode(QLineEdit.EchoMode.Password)#Oculta la contraseña
 
     def iniciar_mainview(self):
         nombre_usuario = self.user_input.text()
@@ -90,7 +90,7 @@ class LoginR(QWidget):
             self.password_input.clear()
 
     def paginaprincipal(self, rol):
-        self.main_window = MainWindowPri(rol)  # Pasar el rol al crear la instancia de MainWindowPri
+        self.main_window = MainWindowPri(rol)  # Enviamos el rol al crear la instancia de MainWindowPri
         self.main_window.show()
 
 

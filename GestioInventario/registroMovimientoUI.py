@@ -9,7 +9,7 @@ from DAO.registroMovimientoDAO import obtener_fecha, RegistroMovimientoDAO, obte
 from model.registroMovimiento import RegistroMovimiento
 from paginaPrincipal import *
 
-
+#para que nos muestre un cuadro de dialogo de la tabla de proveedores
 class DialogoTabla(QDialog):
     celda_clickeada = pyqtSignal(int)
 
@@ -23,13 +23,15 @@ class DialogoTabla(QDialog):
         self.table.setColumnCount(6)
         self.table.setHorizontalHeaderLabels(["ProveedorID", "Nombre", "Apellido", "Dirección", "Teléfono", "Email"])
         self.table.setRowCount(len(proveedores))
+
+        #en esta parte recorremos la lista de proveedores y los datos de la tabla
         for row, proveedor in enumerate(proveedores):
             for column, data in enumerate(proveedor):
                 self.table.setItem(row, column, QTableWidgetItem(str(data)))
-        self.table.cellClicked.connect(self.on_cell_clicked)
+        self.table.cellClicked.connect(self.clickedEnCelda)
         layout.addWidget(self.table)
 
-    def on_cell_clicked(self, row, column):
+    def clickedEnCelda(self, row, column):
         id_celda = int(self.table.item(row, 0).text())
         self.celda_clickeada.emit(id_celda)
         self.accept()
@@ -42,6 +44,7 @@ class MainWindowM(QMainWindow):
         self.setWindowIcon(QIcon("img/pngegg (5).png"))
         self.setGeometry(350, 100, 630, 550)
 
+        #formulario de registro de inventario
         self.layout = QVBoxLayout()
         self.form_layout = QFormLayout()
 
@@ -54,7 +57,6 @@ class MainWindowM(QMainWindow):
         self.form_layout.addRow(QLabel("DescripcionProducto:"), self.DescripcionProducto_input)
 
         self.CategoriaProducto_input = QComboBox()
-        #para una tienda electronica
         categorias = ["Computadoras", "Celulares", "Tablets", "Accesorios", "Impresoras", "Monitores", "Teclados", "Mouses"]
         self.CategoriaProducto_input.addItems(categorias)
         self.form_layout.addRow(QLabel("CategoriaProducto:"), self.CategoriaProducto_input)
@@ -83,7 +85,7 @@ class MainWindowM(QMainWindow):
         self.Remitente_input = QLineEdit()
         self.form_layout.addRow(QLabel("Remitente:"), self.Remitente_input)
 
-        for i in range(self.form_layout.rowCount()):
+        for i in range(self.form_layout.rowCount()):#para que los campos de texto tengan un tamaño fijo
             self.form_layout.itemAt(i, QFormLayout.ItemRole.FieldRole).widget().setFixedWidth(200)
 
         self.form_layout.addRow(QLabel(""))
@@ -91,27 +93,27 @@ class MainWindowM(QMainWindow):
         layout_vbox_buttons = QHBoxLayout()
         self.form_layout.addRow(layout_vbox_buttons)
 
-        self.add_button = QPushButton("Agregar")
-        self.update_button = QPushButton("Actualizar")
-        self.delete_button = QPushButton("Eliminar")
+        self.agregarBtn = QPushButton("Agregar")
+        self.actualizarBtn = QPushButton("Actualizar")
+        self.eliminarBtn = QPushButton("Eliminar")
         self.export_button = QPushButton("Exportar")
         self.limpiar_campo = QPushButton("Limpiar")
 
-        self.add_button.clicked.connect(self.guardar_movimiento)
-        self.update_button.clicked.connect(self.actualizar_movimiento)
-        self.delete_button.clicked.connect(self.eliminar_movimiento)
+        self.agregarBtn.clicked.connect(self.guardar_movimiento)
+        self.actualizarBtn.clicked.connect(self.actualizar_movimiento)
+        self.eliminarBtn.clicked.connect(self.eliminar_movimiento)
         self.export_button.clicked.connect(self.exportar_movimiento)
         self.limpiar_campo.clicked.connect(self.limpiar_campos)
 
-        layout_vbox_buttons.addWidget(self.add_button)
-        layout_vbox_buttons.addWidget(self.update_button)
-        layout_vbox_buttons.addWidget(self.delete_button)
+        layout_vbox_buttons.addWidget(self.agregarBtn)
+        layout_vbox_buttons.addWidget(self.actualizarBtn)
+        layout_vbox_buttons.addWidget(self.eliminarBtn)
         layout_vbox_buttons.addWidget(self.export_button)
         layout_vbox_buttons.addWidget(self.limpiar_campo)
 
-        self.add_button.setFixedSize(80, 30)
-        self.update_button.setFixedSize(80, 30)
-        self.delete_button.setFixedSize(80, 30)
+        self.eliminarBtn.setFixedSize(80, 30)
+        self.actualizarBtn.setFixedSize(80, 30)
+        self.eliminarBtn.setFixedSize(80, 30)
         self.export_button.setFixedSize(80, 30)
         self.limpiar_campo.setFixedSize(80, 30)
 
@@ -124,7 +126,7 @@ class MainWindowM(QMainWindow):
         self.image_label.setScaledContents(True)
         self.image_label.setFixedSize(400, 350)
 
-        layout_hbox.addWidget(self.image_label)
+        layout_hbox.addWidget(self.image_label)#para que se muestre la imagen en la ventana
 
         layout_vbox = QVBoxLayout()
         layout_vbox.addLayout(layout_hbox)
@@ -143,16 +145,16 @@ class MainWindowM(QMainWindow):
         widget.setLayout(layout_vbox)
         self.setCentralWidget(widget)
 
-        # Crear la barra de herramientas (ToolBar)
+        # barra de herramientas
         self.toolbar = QToolBar("ToolBar")
         self.addToolBar(self.toolbar)
 
         # Acciones de la barra de herramientas
-        self.action_inicio = QAction(QIcon("home.png"), "Inicio", self)
-        self.action_Exportar = QAction(QIcon("save.png"), "Exportar Excel", self)
-        self.action_salir = QAction(QIcon("exit.png"), "Salir", self)
+        self.action_inicio = QAction(QIcon("img/iconos/hogar.png"), "Inicio", self)
+        self.action_Exportar = QAction(QIcon("img/iconos/archivo-hoja-de-calculo.png"), "Exportar Excel", self)
+        self.action_salir = QAction(QIcon("img/iconos/salida-del-portal.png"), "Salir", self)
 
-        self.action_inicio.triggered.connect(self.on_inicio)
+        self.action_inicio.triggered.connect(self.inicio)
         self.action_Exportar.triggered.connect(self.abrir_interfaz_movimientoExcel)
         self.action_salir.triggered.connect(self.salir)
 
@@ -161,8 +163,8 @@ class MainWindowM(QMainWindow):
         self.toolbar.addAction(self.action_Exportar)
         self.toolbar.addAction(self.action_salir)
 
-    def on_inicio(self):
-        self.statusBar().showMessage("Usted se encuentra en la página de inicio...")
+    def inicio(self):
+        self.statusBar().showMessage("Calichin usted se encuentra en la página de inicio...")
         self.close()
 
     def salir(self):
@@ -207,7 +209,7 @@ class MainWindowM(QMainWindow):
                     ws_proveedores.append(proveedor)
 
                 wb.save(file_path)
-                QMessageBox.information(self, "Exportar Movimientos", "Los movimientos se exportaron correctamente.")
+                QMessageBox.information(self, "Exportar Excel", "Los Movimientos se exportaron correctamente.")
             except Exception as e:
                 QMessageBox.warning(self, "Exportar Movimientos", f"Error al exportar los movimientos: {str(e)}")
 
@@ -268,7 +270,7 @@ class MainWindowM(QMainWindow):
 
             fila_seleccionada = self.table.currentRow()
             if fila_seleccionada == -1:
-                QMessageBox.warning(self, "Advertencia", "Por favor, seleccione un movimiento de la tabla.")
+                QMessageBox.warning(self, "Wiu wiu wiu", "Por favor, seleccione un movimiento de la tabla.")
                 return
 
             movimiento_id = self.table.item(fila_seleccionada, 0).text()
@@ -284,7 +286,7 @@ class MainWindowM(QMainWindow):
     def eliminar_movimiento(self):
         fila_seleccionada = self.table.currentRow()
         if fila_seleccionada == -1:
-            QMessageBox.warning(self, "Advertencia", "Por favor, seleccione un Movimiento de la tabla.")
+            QMessageBox.warning(self, "Wiu wiu wiu", "Por favor, seleccione un Movimiento de la tabla.")
             return
 
         movimiento_id = int(self.table.item(fila_seleccionada, 0).text())
