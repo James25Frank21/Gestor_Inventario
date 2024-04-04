@@ -3,7 +3,6 @@ use gestioninventario;
 CREATE TABLE Proveedores (
     ProveedorID INT AUTO_INCREMENT PRIMARY KEY,
     Nombre VARCHAR(100) NOT NULL,
-    Apellido VARCHAR(100),
     Direccion VARCHAR(100),
     Telefono VARCHAR(20),
     Email VARCHAR(100)

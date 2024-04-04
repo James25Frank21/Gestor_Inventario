@@ -25,9 +25,6 @@ class MainWindowP(QMainWindow):
         self.nombre_input = QLineEdit()
         self.form_layout.addRow(QLabel("Nombre:"), self.nombre_input)
 
-        self.apellido_input = QLineEdit()
-        self.form_layout.addRow(QLabel("Apellido:"), self.apellido_input)
-
         self.direccion_input = QLineEdit()
         self.form_layout.addRow(QLabel("Dirección:"), self.direccion_input)
 
@@ -48,23 +45,23 @@ class MainWindowP(QMainWindow):
         self.form_layout.addRow(layout_vbox_buttons)
 
         #En esta parte se crean los botones
-        self.add_button = QPushButton("Agregar")
-        self.update_button = QPushButton("Actualizar")
-        self.delete_button = QPushButton("Eliminar")
+        self.agregarBtn = QPushButton("Agregar")
+        self.actualizarBtn = QPushButton("Actualizar")
+        self.eliminarBtn = QPushButton("Eliminar")
 
-        self.add_button.clicked.connect(self.guardar_proveedor)
-        self.update_button.clicked.connect(self.actualizar_proveedor)
-        self.delete_button.clicked.connect(self.eliminar_proveedor)
+        self.agregarBtn.clicked.connect(self.guardar_proveedor)
+        self.actualizarBtn.clicked.connect(self.actualizar_proveedor)
+        self.eliminarBtn.clicked.connect(self.eliminar_proveedor)
 
         #Aqui se agregan los botones
-        layout_vbox_buttons.addWidget(self.add_button)#vbox es para que los botones queden uno debajo del otro
-        layout_vbox_buttons.addWidget(self.update_button)
-        layout_vbox_buttons.addWidget(self.delete_button)
+        layout_vbox_buttons.addWidget(self.agregarBtn)#vbox es para que los botones queden uno debajo del otro
+        layout_vbox_buttons.addWidget(self.actualizarBtn)
+        layout_vbox_buttons.addWidget(self.eliminarBtn)
 
         #en esta parte se le da un tamaño fijo a los botones
-        self.add_button.setFixedSize(80, 30)
-        self.update_button.setFixedSize(80, 30)
-        self.delete_button.setFixedSize(80, 30)
+        self.agregarBtn.setFixedSize(80, 30)
+        self.actualizarBtn.setFixedSize(80, 30)
+        self.eliminarBtn.setFixedSize(80, 30)
 
 
         layout_hbox = QHBoxLayout() # esto es para que la imagen y el formulario queden en una fila horizontal
@@ -88,8 +85,8 @@ class MainWindowP(QMainWindow):
 
         # Tabla de proveedores
         self.table = QTableWidget()
-        self.table.setColumnCount(6)#esto es para que la tabla tenga 6 columnas
-        self.table.setHorizontalHeaderLabels(["ProveedorID", "Nombre", "Apellido", "Dirección", "Teléfono", "Email"])
+        self.table.setColumnCount(5)#esto es para que la tabla tenga 5 columnas
+        self.table.setHorizontalHeaderLabels(["ProveedorID", "Nombre", "Dirección", "Teléfono", "Email"])
         self.table.cellClicked.connect(self.seleccionar_proveedor)
         self.cargar_proveedores()
 
@@ -131,26 +128,23 @@ class MainWindowP(QMainWindow):
     # Funciones de los botones
     def guardar_proveedor(self):
         nombre = self.nombre_input.text()
-        apellido = self.apellido_input.text()
         direccion = self.direccion_input.text()
         telefono = self.telefono_input.text()
         email = self.email_input.text()
 
-        proveedor = Proveedor(None, nombre, apellido, direccion, telefono, email)
+        proveedor = Proveedor(None, nombre, direccion, telefono, email)
         ProveedorDAO.insertar_proveedor(proveedor)
         self.cargar_proveedores()
         self.limpiar_campos()
 
     def seleccionar_proveedor(self, row, column):
         self.nombre_input.setText(self.table.item(row, 1).text())
-        self.apellido_input.setText(self.table.item(row, 2).text())
         self.direccion_input.setText(self.table.item(row, 3).text())
         self.telefono_input.setText(self.table.item(row, 4).text())
         self.email_input.setText(self.table.item(row, 5).text())
 
     def actualizar_proveedor(self):
         nombre = self.nombre_input.text()
-        apellido = self.apellido_input.text()
         direccion = self.direccion_input.text()
         telefono = self.telefono_input.text()
         email = self.email_input.text()
@@ -161,7 +155,7 @@ class MainWindowP(QMainWindow):
             return
 
         id_proveedor = int(self.table.item(fila_seleccionada, 0).text())
-        proveedor = Proveedor(id_proveedor, nombre, apellido, direccion, telefono, email)
+        proveedor = Proveedor(id_proveedor, nombre, direccion, telefono, email)
         ProveedorDAO.actualizar_proveedor(proveedor)
         self.cargar_proveedores()
         self.limpiar_campos()
@@ -184,14 +178,12 @@ class MainWindowP(QMainWindow):
             self.table.insertRow(row)
             self.table.setItem(row, 0, QTableWidgetItem(str(proveedor.proveedor_id)))
             self.table.setItem(row, 1, QTableWidgetItem(proveedor.nombre))
-            self.table.setItem(row, 2, QTableWidgetItem(proveedor.apellido))
-            self.table.setItem(row, 3, QTableWidgetItem(proveedor.direccion))
-            self.table.setItem(row, 4, QTableWidgetItem(proveedor.telefono))
-            self.table.setItem(row, 5, QTableWidgetItem(proveedor.email))
+            self.table.setItem(row, 2, QTableWidgetItem(proveedor.direccion))
+            self.table.setItem(row, 3, QTableWidgetItem(proveedor.telefono))
+            self.table.setItem(row, 4, QTableWidgetItem(proveedor.email))
 
     def limpiar_campos(self):
         self.nombre_input.clear()
-        self.apellido_input.clear()
         self.direccion_input.clear()
         self.telefono_input.clear()
         self.email_input.clear()

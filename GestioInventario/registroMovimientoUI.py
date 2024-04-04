@@ -20,8 +20,8 @@ class DialogoTabla(QDialog):
         # tamaño de la ventana
         self.setGeometry(350, 100, 630, 300)
         self.table = QTableWidget()
-        self.table.setColumnCount(6)
-        self.table.setHorizontalHeaderLabels(["ProveedorID", "Nombre", "Apellido", "Dirección", "Teléfono", "Email"])
+        self.table.setColumnCount(5)
+        self.table.setHorizontalHeaderLabels(["ProveedorID", "Nombre", "Dirección", "Teléfono", "Email"])
         self.table.setRowCount(len(proveedores))
 
         #en esta parte recorremos la lista de proveedores y los datos de la tabla

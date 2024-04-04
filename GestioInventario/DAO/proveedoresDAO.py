@@ -8,8 +8,8 @@ class ProveedorDAO:
         try:
             conexion = conectar()
             cursor = conexion.cursor()
-            sql = "INSERT INTO Proveedores (Nombre, Apellido, Direccion, Telefono, Email) VALUES (%s, %s, %s, %s, %s)"
-            valores = (proveedor.nombre, proveedor.apellido, proveedor.direccion, proveedor.telefono, proveedor.email)
+            sql = "INSERT INTO Proveedores (Nombre, Direccion, Telefono, Email) VALUES (%s, %s, %s, %s)"
+            valores = (proveedor.nombre, proveedor.direccion, proveedor.telefono, proveedor.email)
             cursor.execute(sql, valores)
             conexion.commit()
             print("Proveedor insertado correctamente.")
@@ -25,8 +25,8 @@ class ProveedorDAO:
         try:
             conexion = conectar()
             cursor = conexion.cursor()
-            sql = "UPDATE Proveedores SET Nombre = %s, Apellido = %s, Direccion = %s, Telefono = %s, Email = %s WHERE ProveedorID = %s"
-            valores = (proveedor.nombre, proveedor.apellido, proveedor.direccion, proveedor.telefono, proveedor.email, proveedor.proveedor_id)
+            sql = "UPDATE Proveedores SET Nombre = %s, Direccion = %s, Telefono = %s, Email = %s WHERE ProveedorID = %s"
+            valores = (proveedor.nombre, proveedor.direccion, proveedor.telefono, proveedor.email, proveedor.proveedor_id)
             cursor.execute(sql, valores)
             conexion.commit()
             print("Proveedor actualizado correctamente.")
