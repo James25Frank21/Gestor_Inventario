@@ -20,7 +20,7 @@ class ProveedorDAO:
                 cursor.close()
                 conexion.close()
 
-    @staticmethod
+    @staticmethod #esta linea es para que el metodo sea estatico y no necesite una instancia para ser llamado
     def actualizar_proveedor(proveedor):
         try:
             conexion = conectar()
